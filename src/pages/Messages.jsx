@@ -9,5 +9,5 @@ export default function Messages() {
         </p>
       </div>
     </div>
-  )
+  );
 }
