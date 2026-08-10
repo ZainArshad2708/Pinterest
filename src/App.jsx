@@ -146,6 +146,7 @@ export const defaultPins = [
 export default function App() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [pinToEdit, setPinToEdit] = useState(null);
 
   const [pins, setPins] = useState(() => {
     const savedPins = localStorage.getItem("pinterest_clone_pins");
@@ -164,6 +165,14 @@ export default function App() {
     const newPin = { id: Date.now(), ...newPinData, ratio: "4 / 5" };
     setPins([newPin, ...pins]);
     setIsCreateModalOpen(false);
+  };
+
+  const editPin = (updatedPin) => {
+    setPins((prevPins) =>
+      prevPins.map((pin) => (pin.id === updatedPin.id ? updatedPin : pin)),
+    );
+    setIsCreateModalOpen(false);
+    setPinToEdit(null);
   };
 
   const deletePin = (pinId) => {
@@ -192,7 +201,16 @@ export default function App() {
           <Route path="profile" element={<ProfilePage pins={pins} />} />
           <Route
             path="pin/:id"
-            element={<PinDetail pins={pins} onDelete={deletePin} />}
+            element={
+              <PinDetail
+                pins={pins}
+                onDelete={deletePin}
+                onEdit={(pinToEdit) => {
+                  setPinToEdit(pinToEdit);
+                  setIsCreateModalOpen(true);
+                }}
+              />
+            }
           />
         </Route>
 
@@ -201,8 +219,13 @@ export default function App() {
 
       {isCreateModalOpen && (
         <CreatePinModal
-          onClose={() => setIsCreateModalOpen(false)}
+          onClose={() => {
+            setIsCreateModalOpen(false);
+            setPinToEdit(null);
+          }}
           onSave={addPin}
+          onUpdate={editPin}
+          editingPin={pinToEdit}
         />
       )}
     </BrowserRouter>

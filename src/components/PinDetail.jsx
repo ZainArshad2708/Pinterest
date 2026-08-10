@@ -12,7 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-export default function PinDetail({ pins, onDelete }) {
+export default function PinDetail({ pins, onDelete, onEdit }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -80,12 +80,22 @@ export default function PinDetail({ pins, onDelete }) {
                 </button>
                 {isMenuOpen && (
                   <div className="absolute right-0 top-10 z-50 w-40 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/5">
+                    {/* ✅ ADDED: Edit Button */}
+                    <button
+                      onClick={() => {
+                        onEdit(pin);
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#111111] transition hover:bg-[#f0f0f0]"
+                    >
+                      <span className="text-lg">✏️</span> Edit pin
+                    </button>
+
                     <button
                       onClick={handleDelete}
                       className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-[#f0f0f0]"
                     >
-                      <Trash2 size={16} />
-                      Delete pin
+                      <Trash2 size={16} /> Delete pin
                     </button>
                   </div>
                 )}
