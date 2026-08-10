@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, X } from "lucide-react";
 
-export default function CreatePinModal({ onClose, onSave }) {
+export default function CreatePinModal({
+  onClose,
+  onSave,
+  editingPin,
+  onUpdate,
+}) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  // 🔥 If we are editing a pin, load its data into the form automatically
+  useEffect(() => {
+    if (editingPin) {
+      setTitle(editingPin.title || "");
+      setDescription(editingPin.description || "");
+      setPreviewUrl(editingPin.imageUrl);
+    }
+  }, [editingPin]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files?.[0];
@@ -18,17 +32,27 @@ export default function CreatePinModal({ onClose, onSave }) {
   const handleSave = () => {
     if (!previewUrl) return alert("Please upload an image first!");
 
-    onSave({
-      title: title || "Untitled pin",
-      imageUrl: previewUrl,
-    });
+    // 🔥 If we are editing, call onUpdate. Otherwise, call onSave.
+    if (editingPin) {
+      onUpdate({
+        id: editingPin.id,
+        title: title || "Untitled pin",
+        description: description,
+        imageUrl: previewUrl,
+        ratio: editingPin.ratio || "4 / 5",
+      });
+    } else {
+      onSave({
+        title: title || "Untitled pin",
+        description: description,
+        imageUrl: previewUrl,
+      });
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-[2px]">
-      {/* Modal Container */}
       <div className="relative flex w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl md:h-[90vh] md:flex-row">
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/80 hover:bg-white md:bg-transparent md:hover:bg-[#f0f0f0]"
@@ -120,7 +144,7 @@ export default function CreatePinModal({ onClose, onSave }) {
               onClick={handleSave}
               className="rounded-full bg-[#E60023] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#ad001b]"
             >
-              Publish
+              {editingPin ? "Update" : "Publish"}
             </button>
           </div>
         </div>
