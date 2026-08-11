@@ -7,6 +7,7 @@ import MainLayout from "./layouts/MainLayout";
 // Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import BoardsPage from "./pages/BoardsPage";
 
 // Components
 import HomeFeed from "./components/HomeFeed";
@@ -199,6 +200,7 @@ export default function App() {
         >
           <Route index element={<HomeFeed pins={filteredPins} />} />
           <Route path="profile" element={<ProfilePage pins={pins} />} />
+          <Route path="boards" element={<BoardsPage />} />
           <Route
             path="pin/:id"
             element={
