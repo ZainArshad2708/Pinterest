@@ -153,6 +153,18 @@ export default function App() {
     const savedPins = localStorage.getItem("pinterest_clone_pins");
     return savedPins ? JSON.parse(savedPins) : defaultPins;
   });
+  // ✅ ADD THIS BLOCK TO PROTECT THE APP
+  useEffect(() => {
+    const user = localStorage.getItem("pinterest_user");
+    // If no user is found, send them to login (unless they are already there)
+    if (
+      !user &&
+      window.location.pathname !== "/login" &&
+      window.location.pathname !== "/register"
+    ) {
+      window.location.href = "/login"; // Force redirect
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("pinterest_clone_pins", JSON.stringify(pins));

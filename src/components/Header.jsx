@@ -83,6 +83,13 @@ export default function Header({
               ].map((item) => (
                 <button
                   key={item}
+                  onClick={() => {
+                    if (item === "Log out") {
+                      localStorage.removeItem("pinterest_user"); // Remove user data
+                      navigate("/login"); // Send back to login
+                    }
+                    setIsUserMenuOpen(false);
+                  }}
                   className="block w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition hover:bg-[#f0f0f0]"
                 >
                   {item}
