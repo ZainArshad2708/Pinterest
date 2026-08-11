@@ -12,7 +12,6 @@ export default function CreatePinModal({
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  // 🔥 If we are editing a pin, load its data into the form automatically
   useEffect(() => {
     if (editingPin) {
       setTitle(editingPin.title || "");
@@ -32,7 +31,6 @@ export default function CreatePinModal({
   const handleSave = () => {
     if (!previewUrl) return alert("Please upload an image first!");
 
-    // 🔥 If we are editing, call onUpdate. Otherwise, call onSave.
     if (editingPin) {
       onUpdate({
         id: editingPin.id,
@@ -51,28 +49,28 @@ export default function CreatePinModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-[2px]">
-      <div className="relative flex w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl md:h-[90vh] md:flex-row">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-4 backdrop-blur-[2px]">
+      {/* ✅ Responsive Container: Full width on mobile, fixed width on desktop */}
+      <div className="relative flex w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl md:h-[90vh] md:flex-row max-h-[98vh]">
         <button
           onClick={onClose}
-          className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/80 hover:bg-white md:bg-transparent md:hover:bg-[#f0f0f0]"
+          className="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/80 hover:bg-white md:bg-transparent md:hover:bg-[#f0f0f0]"
         >
-          <X size={22} />
+          <X size={20} />
         </button>
 
-        {/* Left Side: Image Upload */}
-        <div className="flex flex-1 flex-col items-center justify-center bg-[#f0f0f0] p-8 md:min-h-full md:p-12">
+        {/* ✅ Left Side: Full height on mobile, half on desktop */}
+        <div className="flex flex-1 flex-col items-center justify-center bg-[#f0f0f0] p-4 md:min-h-full md:p-12">
           {!previewUrl ? (
-            <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#b5b5b5] bg-white p-6 text-center transition hover:bg-[#fafafa]">
-              <div className="grid h-16 w-16 place-items-center rounded-full bg-[#e9e9e9]">
-                <Upload size={28} className="text-[#767676]" />
+            <label className="flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#b5b5b5] bg-white p-4 text-center transition hover:bg-[#fafafa] md:h-full md:p-6">
+              <div className="grid h-12 w-12 place-items-center rounded-full bg-[#e9e9e9] md:h-16 md:w-16">
+                <Upload size={24} className="text-[#767676] md:size-[28px]" />
               </div>
-              <p className="mt-4 text-lg font-bold">Choose a file</p>
-              <p className="mt-1 text-sm text-[#767676]">
-                or drag and drop it here
+              <p className="mt-2 text-base font-bold md:mt-4 md:text-lg">
+                Choose a file
               </p>
-              <p className="mt-4 text-xs text-[#767676]">
-                Recommended: Square 1:1, up to 20MB
+              <p className="mt-1 text-xs text-[#767676] md:text-sm">
+                or drag and drop it here
               </p>
               <input
                 type="file"
@@ -82,7 +80,7 @@ export default function CreatePinModal({
               />
             </label>
           ) : (
-            <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white shadow-sm">
+            <div className="relative h-full w-full max-h-[300px] md:max-h-none overflow-hidden rounded-2xl bg-white shadow-sm">
               <img
                 src={previewUrl}
                 alt="Preview"
@@ -93,56 +91,47 @@ export default function CreatePinModal({
                   setFile(null);
                   setPreviewUrl(null);
                 }}
-                className="absolute right-2 top-2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+                className="absolute right-2 top-2 rounded-full bg-black/50 p-1.5 text-white hover:bg-black/70"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Right Side: Form Details */}
-        <div className="flex flex-1 flex-col p-6 md:p-10">
-          <div className="flex-1 space-y-6">
+        {/* ✅ Right Side: Stacks below on mobile */}
+        <div className="flex flex-1 flex-col p-4 md:p-10">
+          <div className="flex-1 space-y-4 md:space-y-6">
             <div className="space-y-1">
-              <label htmlFor="title" className="sr-only">
-                Title
-              </label>
               <input
-                id="title"
                 type="text"
                 placeholder="Add your title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full border-b-2 border-transparent bg-transparent text-3xl font-bold outline-none placeholder:text-[#b5b5b5] focus:border-b-[#767676]"
+                className="w-full border-b-2 border-transparent bg-transparent text-xl font-bold outline-none placeholder:text-[#b5b5b5] focus:border-b-[#767676] md:text-3xl"
               />
             </div>
-
             <div className="space-y-1">
-              <label htmlFor="description" className="sr-only">
-                Description
-              </label>
               <textarea
-                id="description"
                 placeholder="Tell everyone what this Pin is about"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full resize-none bg-transparent text-base outline-none placeholder:text-[#b5b5b5]"
-                rows={4}
+                className="w-full resize-none bg-transparent text-sm outline-none placeholder:text-[#b5b5b5] md:text-base"
+                rows={3}
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 border-t border-[#e9e9e9] pt-6">
+          <div className="flex items-center justify-end gap-3 border-t border-[#e9e9e9] pt-4 md:pt-6">
             <button
               onClick={onClose}
-              className="rounded-full bg-[#f0f0f0] px-4 py-2.5 text-sm font-bold transition hover:bg-[#e4e4e4]"
+              className="rounded-full bg-[#f0f0f0] px-4 py-2 text-xs font-bold transition hover:bg-[#e4e4e4] md:px-4 md:py-2.5 md:text-sm"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="rounded-full bg-[#E60023] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#ad001b]"
+              className="rounded-full bg-[#E60023] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#ad001b] md:px-4 md:py-2.5 md:text-sm"
             >
               {editingPin ? "Update" : "Publish"}
             </button>

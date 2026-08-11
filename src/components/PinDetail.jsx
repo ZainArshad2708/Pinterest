@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -24,7 +24,7 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
 
   if (!pin) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center text-sm text-[#767676]">
         Pin not found
       </div>
     );
@@ -40,62 +40,77 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-[2px]">
-      <div className="flex w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl md:h-[90vh] md:flex-row">
-        {/* LEFT PANEL */}
-        <div className="relative flex flex-1 flex-col bg-[#f8f8f8] p-3 md:p-5">
-          <div className="mb-3 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-4 backdrop-blur-[2px]">
+      <div className="flex w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl md:h-[90vh] md:flex-row max-h-[98vh]">
+        {/* ✅ LEFT PANEL: Takes full height on mobile, half on desktop */}
+        <div className="relative flex flex-1 flex-col bg-[#f8f8f8] p-3 md:p-5 max-h-[98vh] md:max-h-full overflow-y-auto">
+          {/* Top Row */}
+          <div className="mb-2 flex items-center justify-between md:mb-3">
             <div className="flex items-center gap-1 text-[#111111]">
               <button
                 onClick={() => navigate("/")}
-                className="grid h-9 w-9 place-items-center rounded-full transition hover:bg-[#e9e9e9]"
+                className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9"
               >
-                <ArrowLeft size={20} strokeWidth={2.5} />
+                <ArrowLeft
+                  size={18}
+                  strokeWidth={2.5}
+                  className="md:size-[20px]"
+                />
               </button>
 
               <button
                 onClick={() => setIsLiked(!isLiked)}
-                className="grid h-9 w-9 place-items-center rounded-full transition hover:bg-[#e9e9e9]"
+                className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9"
               >
                 <Heart
-                  size={20}
+                  size={18}
                   strokeWidth={2.5}
                   fill={isLiked ? "currentColor" : "none"}
                   className={isLiked ? "text-[#E60023]" : "text-[#111111]"}
                 />
               </button>
-              <button className="grid h-9 w-9 place-items-center rounded-full transition hover:bg-[#e9e9e9]">
-                <MessageCircle size={20} strokeWidth={2.5} />
+              <button className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9">
+                <MessageCircle
+                  size={18}
+                  strokeWidth={2.5}
+                  className="md:size-[20px]"
+                />
               </button>
-              <button className="grid h-9 w-9 place-items-center rounded-full transition hover:bg-[#e9e9e9]">
-                <Share2 size={20} strokeWidth={2.5} />
+              <button className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9">
+                <Share2
+                  size={18}
+                  strokeWidth={2.5}
+                  className="md:size-[20px]"
+                />
               </button>
 
               <div className="relative">
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="grid h-9 w-9 place-items-center rounded-full transition hover:bg-[#e9e9e9]"
+                  className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9"
                 >
-                  <MoreHorizontal size={20} strokeWidth={2.5} />
+                  <MoreHorizontal
+                    size={18}
+                    strokeWidth={2.5}
+                    className="md:size-[20px]"
+                  />
                 </button>
                 {isMenuOpen && (
-                  <div className="absolute right-0 top-10 z-50 w-40 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/5">
-                    {/* ✅ ADDED: Edit Button */}
+                  <div className="absolute right-0 top-9 z-50 w-36 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/5 md:top-10 md:w-40">
                     <button
                       onClick={() => {
                         onEdit(pin);
                         setIsMenuOpen(false);
                       }}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#111111] transition hover:bg-[#f0f0f0]"
+                      className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-[#111111] transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
                     >
-                      <span className="text-lg">✏️</span> Edit pin
+                      <span className="text-base">✏️</span> Edit pin
                     </button>
-
                     <button
                       onClick={handleDelete}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-[#f0f0f0]"
+                      className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
                     >
-                      <Trash2 size={16} /> Delete pin
+                      <Trash2 size={14} className="md:size-[16px]" /> Delete pin
                     </button>
                   </div>
                 )}
@@ -105,7 +120,7 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
             <button
               onClick={() => setIsSaved(!isSaved)}
               style={{ backgroundColor: isSaved ? "#111111" : "#E60023" }}
-              className="flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-4 text-sm font-bold text-white shadow-sm transition-colors border-0 outline-none"
+              className="flex h-8 items-center justify-center gap-1 whitespace-nowrap rounded-full px-3.5 text-xs font-bold text-white shadow-sm transition-colors border-0 outline-none md:h-9 md:gap-1.5 md:px-4 md:text-sm"
               onMouseEnter={(e) => {
                 if (isSaved) e.currentTarget.style.backgroundColor = "#000000";
                 else e.currentTarget.style.backgroundColor = "#ad001b";
@@ -117,7 +132,7 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
             >
               {isSaved ? (
                 <>
-                  <Check size={18} strokeWidth={3} />
+                  <Check size={14} strokeWidth={3} className="md:size-[18px]" />
                   Saved
                 </>
               ) : (
@@ -127,49 +142,54 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
           </div>
 
           {/* Main Image */}
-          <div className="flex-1 overflow-hidden rounded-xl bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl bg-white shadow-sm w-full aspect-[4/5] md:aspect-auto md:flex-1">
             <img
               src={pin.imageUrl}
               alt={pin.title}
-              className="h-full w-full object-contain"
+              className="h-full w-full object-cover md:object-contain"
             />
           </div>
 
-          {/* ✅ ADDED: Title and Description render here */}
-          <div className="mt-4 space-y-2">
-            <h2 className="text-2xl font-bold text-[#111111]">{pin.title}</h2>
-            {/* Optional: Since our mock data doesn't have descriptions yet, this checks if it exists first */}
+          {/* Title and Description */}
+          <div className="mt-3 space-y-1 md:mt-4 md:space-y-2">
+            <h2 className="text-lg font-bold text-[#111111] md:text-2xl">
+              {pin.title}
+            </h2>
             {pin.description && (
-              <p className="text-sm text-[#767676]">{pin.description}</p>
+              <p className="text-xs text-[#767676] md:text-sm">
+                {pin.description}
+              </p>
             )}
           </div>
 
           {/* Author Details */}
-          <div className="mt-4 flex items-center gap-3">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f6c94c] text-xs font-bold text-[#5a4600]">
+          <div className="mt-3 flex items-center gap-2 md:mt-4 md:gap-3">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-[#f6c94c] text-[10px] font-bold text-[#5a4600] md:h-8 md:w-8 md:text-xs">
               Z
             </span>
-            <span className="text-sm font-semibold">Zain Arshad</span>
+            <span className="text-xs font-semibold md:text-sm">
+              Zain Arshad
+            </span>
           </div>
 
           {/* Comment Input */}
-          <div className="mt-3 flex items-center gap-2 rounded-full border border-[#e9e9e9] bg-white px-4 py-2 shadow-sm focus-within:border-[#111111] focus-within:ring-1 focus-within:ring-[#111111]">
+          <div className="mt-2 flex items-center gap-2 rounded-full border border-[#e9e9e9] bg-white px-3 py-1.5 shadow-sm focus-within:border-[#111111] focus-within:ring-1 focus-within:ring-[#111111] md:mt-3 md:px-4 md:py-2">
             <input
               type="text"
               placeholder="Add a comment..."
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-[#767676]"
+              className="flex-1 bg-transparent text-xs outline-none placeholder:text-[#767676] md:text-sm"
             />
             <button className="text-[#767676] hover:text-[#111111]">
-              <Smile size={18} />
+              <Smile size={14} className="md:size-[18px]" />
             </button>
             <button className="text-[#767676] hover:text-[#111111]">
-              <ImageIcon size={18} />
+              <ImageIcon size={14} className="md:size-[18px]" />
             </button>
           </div>
         </div>
 
-        {/* RIGHT PANEL: Related Pins */}
-        <div className="flex-1 bg-white p-4 md:max-w-[50%] overflow-y-auto">
+        {/* ✅ RIGHT PANEL: Completely HIDDEN on mobile (hidden), shows on sm and up (sm:block) */}
+        <div className="hidden sm:block flex-1 bg-white p-3 md:max-w-[50%] overflow-y-auto max-h-[50vh] md:max-h-full">
           <div className="columns-2 gap-2 sm:columns-3">
             {relatedPins.map((relatedPin) => (
               <div
@@ -187,7 +207,7 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
               </div>
             ))}
           </div>
-          <div className="mt-6 text-center text-sm font-semibold text-[#767676]">
+          <div className="mt-4 text-center text-xs font-semibold text-[#767676] md:mt-6 md:text-sm">
             Ideas you might like
           </div>
         </div>
