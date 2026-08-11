@@ -3,6 +3,7 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Drawer from "../components/Drawer";
+import SettingsDrawer from "../components/SettingsDrawer";
 
 export default function MainLayout({
   pins,
@@ -15,11 +16,13 @@ export default function MainLayout({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const [drawerType, setDrawerType] = useState(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   let activeTab = "Home";
   if (location.pathname === "/profile") activeTab = "Profile";
 
   const closeDrawer = () => setDrawerType(null);
+  const closeSettings = () => setIsSettingsOpen(false);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-white">
@@ -28,6 +31,7 @@ export default function MainLayout({
         onCreate={onCreate}
         onOpenNotifications={() => setDrawerType("Notifications")}
         onOpenMessages={() => setDrawerType("Messages")}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       <div className="relative min-w-0 flex-1 overflow-y-auto">
@@ -43,6 +47,8 @@ export default function MainLayout({
       </div>
 
       {drawerType && <Drawer type={drawerType} onClose={closeDrawer} />}
+
+      {isSettingsOpen && <SettingsDrawer onClose={closeSettings} />}
     </div>
   );
 }
