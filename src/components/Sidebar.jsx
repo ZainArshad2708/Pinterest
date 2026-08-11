@@ -22,6 +22,7 @@ export default function Sidebar({
   onCreate,
   onOpenNotifications,
   onOpenMessages,
+  onOpenSettings,
 }) {
   const navigate = useNavigate();
 
@@ -82,6 +83,7 @@ export default function Sidebar({
       <button
         aria-label="Settings"
         title="Settings"
+        onClick={onOpenSettings}
         className="mt-auto grid h-11 w-11 place-items-center rounded-full text-[#767676] transition hover:bg-[#e9e9e9] hover:text-[#111111]"
       >
         <Settings size={22} strokeWidth={2.25} />
