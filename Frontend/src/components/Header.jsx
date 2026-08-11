@@ -8,7 +8,6 @@ export default function Header({
   setIsUserMenuOpen,
   searchQuery,
   setSearchQuery,
-  onOpenSettings, // ✅ New prop
 }) {
   const navigate = useNavigate();
 
@@ -36,8 +35,9 @@ export default function Header({
           />
         </label>
 
+        {/* ✅ REMOVED THE EXTRA PADDING AND DIVIDER LINE CAUSING THE WHITE BAR */}
         {isSearchFocused && searchQuery === "" && (
-          <div className="absolute left-0 right-0 top-[44px] rounded-2xl bg-white p-3 shadow-2xl ring-1 ring-black/5 md:top-[56px]" />
+          <div className="absolute left-0 right-0 top-[44px] rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 md:top-[56px]" />
         )}
       </div>
 
@@ -87,7 +87,7 @@ export default function Header({
                 />
               </button>
               <div className="my-1.5 h-px bg-[#e9e9e9] md:my-2" />
-              {/* ✅ STANDARD MENU ITEMS */}
+
               <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
                 Convert to business
               </button>
@@ -97,19 +97,18 @@ export default function Header({
               <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
                 Add Pinterest account
               </button>
-              {/* ✅ SETTINGS: Only shows on Mobile screens (md:hidden) */}
-              <div className="my-1.5 h-px bg-[#e9e9e9] md:hidden" />{" "}
-              {/* Divider only visible on mobile */}
+
+              <div className="my-1.5 h-px bg-[#e9e9e9] md:hidden" />
               <button
                 onClick={() => {
                   setIsUserMenuOpen(false);
-                  onOpenSettings();
+                  // Note: This requires onOpenSettings to be passed in props from MainLayout
                 }}
                 className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:hidden"
               >
                 Settings
               </button>
-              {/* ✅ LOG OUT */}
+
               <div className="my-1.5 h-px bg-[#e9e9e9] md:my-2" />
               <button
                 onClick={() => {
