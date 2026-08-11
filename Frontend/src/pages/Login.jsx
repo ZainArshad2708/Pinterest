@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authApi, setToken } from "../lib/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -7,18 +8,21 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     if (email.trim() === "" || password.trim() === "") {
       setError("Please fill in both fields.");
       return;
     }
-    localStorage.setItem(
-      "pinterest_user",
-      JSON.stringify({ email, name: "Zain Arshad", isLoggedIn: true }),
-    );
-    navigate("/");
+    try {
+      const { user, token } = await authApi.login({ email, password });
+      setToken(token);
+      localStorage.setItem("pinterest_user", JSON.stringify(user));
+      navigate("/", { replace: true });
+    } catch (requestError) {
+      setError(requestError.message);
+    }
   };
 
   return (

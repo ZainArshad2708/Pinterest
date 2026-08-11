@@ -1,217 +1,109 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
-  Heart,
-  MessageCircle,
-  Share2,
-  MoreHorizontal,
-  Smile,
-  Image as ImageIcon,
   Check,
+  Heart,
+  Image as ImageIcon,
+  MessageCircle,
+  MoreHorizontal,
+  Share2,
+  Smile,
   Trash2,
 } from "lucide-react";
+import { pinsApi } from "../lib/api";
 
-export default function PinDetail({ pins, onDelete, onEdit }) {
+export default function PinDetail({ pins, user, onDelete, onEdit }) {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const pin = pins.find((p) => p.id === parseInt(id));
-
+  const pin = pins.find((item) => item.id === Number(id));
+  const [loadedPin, setLoadedPin] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [comment, setComment] = useState("");
+  const [newComments, setNewComments] = useState([]);
+  const [shareStatus, setShareStatus] = useState("");
 
-  if (!pin) {
-    return (
-      <div className="flex h-screen items-center justify-center text-sm text-[#767676]">
-        Pin not found
-      </div>
-    );
-  }
+  useEffect(() => {
+    pinsApi.detail(id).then(({ pin: detailedPin }) => setLoadedPin(detailedPin)).catch(() => setLoadedPin(null));
+  }, [id]);
 
-  const relatedPins = pins.filter((p) => p.id !== pin.id).slice(0, 8);
+  if (!pin) return <div className="grid min-h-full place-items-center text-sm text-[#767676]">Pin not found</div>;
 
-  const handleDelete = () => {
+  const activePin = loadedPin || pin;
+  const relatedPins = pins.filter((item) => item.id !== activePin.id).slice(0, 12);
+  const currentUserAvatar = `https://i.pravatar.cc/100?u=${user?.id || user?.email || "current-user"}`;
+  const comments = [...(activePin.comments || []), ...newComments.map((body, index) => ({ id: `new-${index}`, body, authorName: user?.name || "You", authorAvatar: currentUserAvatar }))];
+
+  const submitComment = () => {
+    if (!comment.trim()) return;
+    setNewComments((current) => [...current, comment.trim()]);
+    setComment("");
+  };
+  const sharePin = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareStatus("Link copied");
+    } catch {
+      setShareStatus(window.location.href);
+    }
+  };
+  const deletePin = () => {
     if (window.confirm("Are you sure you want to delete this pin?")) {
-      onDelete(pin.id);
+      onDelete(activePin.id);
       navigate("/");
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-4 backdrop-blur-[2px]">
-      <div className="flex w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl md:h-[90vh] md:flex-row max-h-[98vh]">
-        {/* ✅ LEFT PANEL: Takes full height on mobile, half on desktop */}
-        <div className="relative flex flex-1 flex-col bg-[#f8f8f8] p-3 md:p-5 max-h-[98vh] md:max-h-full overflow-y-auto">
-          {/* Top Row */}
-          <div className="mb-2 flex items-center justify-between md:mb-3">
-            <div className="flex items-center gap-1 text-[#111111]">
-              <button
-                onClick={() => navigate("/")}
-                className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9"
-              >
-                <ArrowLeft
-                  size={18}
-                  strokeWidth={2.5}
-                  className="md:size-[20px]"
-                />
-              </button>
+    <main className="min-h-full bg-white px-2 py-3 sm:px-4 md:px-5 md:py-4">
+      <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-4 lg:grid-cols-[minmax(420px,1.2fr)_minmax(360px,.95fr)_minmax(250px,.65fr)]">
+        <section className="relative min-h-[520px] overflow-hidden rounded-2xl border border-[#e4e4e4] bg-[#f4f4f2] lg:min-h-[calc(100vh-145px)]">
+          <button onClick={() => navigate("/")} aria-label="Back to home" className="absolute left-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 shadow-sm hover:bg-white"><ArrowLeft size={22} /></button>
+          <img src={activePin.imageUrl} alt={activePin.title} className="h-full min-h-[520px] w-full object-contain lg:min-h-[calc(100vh-145px)]" />
+        </section>
 
-              <button
-                onClick={() => setIsLiked(!isLiked)}
-                className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9"
-              >
-                <Heart
-                  size={18}
-                  strokeWidth={2.5}
-                  fill={isLiked ? "currentColor" : "none"}
-                  className={isLiked ? "text-[#E60023]" : "text-[#111111]"}
-                />
-              </button>
-              <button className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9">
-                <MessageCircle
-                  size={18}
-                  strokeWidth={2.5}
-                  className="md:size-[20px]"
-                />
-              </button>
-              <button className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9">
-                <Share2
-                  size={18}
-                  strokeWidth={2.5}
-                  className="md:size-[20px]"
-                />
-              </button>
-
+        <section className="flex min-h-[520px] flex-col rounded-2xl border border-[#e4e4e4] bg-white p-5 md:p-7 lg:min-h-[calc(100vh-145px)]">
+          <div className="flex items-center justify-between border-b border-[#e9e9e9] pb-5">
+            <div className="flex items-center gap-4">
+              <button onClick={() => setIsLiked((liked) => !liked)} aria-label="Like pin" className="flex items-center gap-2 text-lg font-semibold hover:text-[#E60023]"><Heart size={27} fill={isLiked ? "currentColor" : "none"} className={isLiked ? "text-[#E60023]" : ""} /><span className="text-sm">{isLiked ? "Liked" : "Like"}</span></button>
+              <button onClick={() => document.getElementById("comment-input")?.focus()} aria-label="Open comments" className="hover:text-[#E60023]"><MessageCircle size={27} /></button>
+              <button onClick={sharePin} aria-label="Share pin" className="hover:text-[#E60023]"><Share2 size={27} /></button>
               <div className="relative">
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="grid h-8 w-8 place-items-center rounded-full transition hover:bg-[#e9e9e9] md:h-9 md:w-9"
-                >
-                  <MoreHorizontal
-                    size={18}
-                    strokeWidth={2.5}
-                    className="md:size-[20px]"
-                  />
-                </button>
-                {isMenuOpen && (
-                  <div className="absolute right-0 top-9 z-50 w-36 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/5 md:top-10 md:w-40">
-                    <button
-                      onClick={() => {
-                        onEdit(pin);
-                        setIsMenuOpen(false);
-                      }}
-                      className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-[#111111] transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
-                    >
-                      <span className="text-base">✏️</span> Edit pin
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-red-600 transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
-                    >
-                      <Trash2 size={14} className="md:size-[16px]" /> Delete pin
-                    </button>
-                  </div>
-                )}
+                <button onClick={() => setIsMenuOpen((open) => !open)} aria-label="More pin actions" className="hover:text-[#E60023]"><MoreHorizontal size={27} /></button>
+                {isMenuOpen && <div className="absolute left-0 top-9 z-20 w-40 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/5"><button onClick={() => { onEdit(activePin); setIsMenuOpen(false); }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-[#f0f0f0]">Edit pin</button><button onClick={deletePin} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-[#f0f0f0]"><Trash2 size={15} />Delete pin</button></div>}
               </div>
             </div>
-
-            <button
-              onClick={() => setIsSaved(!isSaved)}
-              style={{ backgroundColor: isSaved ? "#111111" : "#E60023" }}
-              className="flex h-8 items-center justify-center gap-1 whitespace-nowrap rounded-full px-3.5 text-xs font-bold text-white shadow-sm transition-colors border-0 outline-none md:h-9 md:gap-1.5 md:px-4 md:text-sm"
-              onMouseEnter={(e) => {
-                if (isSaved) e.currentTarget.style.backgroundColor = "#000000";
-                else e.currentTarget.style.backgroundColor = "#ad001b";
-              }}
-              onMouseLeave={(e) => {
-                if (isSaved) e.currentTarget.style.backgroundColor = "#111111";
-                else e.currentTarget.style.backgroundColor = "#E60023";
-              }}
-            >
-              {isSaved ? (
-                <>
-                  <Check size={14} strokeWidth={3} className="md:size-[18px]" />
-                  Saved
-                </>
-              ) : (
-                "Save"
-              )}
-            </button>
+            <button onClick={() => setIsSaved((saved) => !saved)} className={`rounded-full px-5 py-3 text-sm font-bold text-white ${isSaved ? "bg-[#111111]" : "bg-[#E60023] hover:bg-[#ad001b]"}`}>{isSaved ? <span className="flex items-center gap-1"><Check size={17} />Saved</span> : "Save"}</button>
           </div>
 
-          {/* Main Image */}
-          <div className="overflow-hidden rounded-xl bg-white shadow-sm w-full aspect-[4/5] md:aspect-auto md:flex-1">
-            <img
-              src={pin.imageUrl}
-              alt={pin.title}
-              className="h-full w-full object-cover md:object-contain"
-            />
+          <div className="mt-3 rounded-xl bg-[#e7e7e4] px-4 py-3 text-center text-sm font-semibold">Remix this idea</div>
+
+          <div className="mt-7 flex items-center justify-between border-b border-[#e9e9e9] pb-4">
+            <h1 className="text-xl font-bold">{comments.length} comments</h1>
+            <button aria-label="Toggle comments" className="text-xl">⌄</button>
           </div>
 
-          {/* Title and Description */}
-          <div className="mt-3 space-y-1 md:mt-4 md:space-y-2">
-            <h2 className="text-lg font-bold text-[#111111] md:text-2xl">
-              {pin.title}
-            </h2>
-            {pin.description && (
-              <p className="text-xs text-[#767676] md:text-sm">
-                {pin.description}
-              </p>
-            )}
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto py-4">
+            {comments.map((item) => <article key={item.id} className="flex items-start gap-3"><img src={item.authorAvatar} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" /><p className="pt-1 text-sm leading-5"><strong className="mr-1">{item.authorName}</strong>{item.body}</p></article>)}
           </div>
 
-          {/* Author Details */}
-          <div className="mt-3 flex items-center gap-2 md:mt-4 md:gap-3">
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-[#f6c94c] text-[10px] font-bold text-[#5a4600] md:h-8 md:w-8 md:text-xs">
-              Z
-            </span>
-            <span className="text-xs font-semibold md:text-sm">
-              Zain Arshad
-            </span>
+          <div className="mt-3 border-t border-[#e9e9e9] pt-4">
+            <div className="mb-3 flex items-center gap-3"><img src={activePin.authorAvatar} alt="" className="h-9 w-9 rounded-full object-cover" /><div><p className="text-sm font-bold">{activePin.authorName || "Pinterest creator"}</p><p className="text-xs text-[#767676]">{activePin.title}</p></div></div>
+            <div className="flex items-center gap-2 rounded-full border border-[#dedede] px-4 py-2.5 focus-within:border-[#111111]">
+              <input id="comment-input" value={comment} onChange={(event) => setComment(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") submitComment(); }} placeholder="Add a comment" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[#8a8a8a]" />
+              <button onClick={() => setComment((value) => `${value} :)`)} aria-label="Add emoji"><Smile size={21} /></button>
+              <button onClick={submitComment} aria-label="Post comment"><ImageIcon size={21} /></button>
+            </div>
+            {shareStatus && <p className="mt-2 text-xs text-[#767676]">{shareStatus}</p>}
           </div>
+        </section>
 
-          {/* Comment Input */}
-          <div className="mt-2 flex items-center gap-2 rounded-full border border-[#e9e9e9] bg-white px-3 py-1.5 shadow-sm focus-within:border-[#111111] focus-within:ring-1 focus-within:ring-[#111111] md:mt-3 md:px-4 md:py-2">
-            <input
-              type="text"
-              placeholder="Add a comment..."
-              className="flex-1 bg-transparent text-xs outline-none placeholder:text-[#767676] md:text-sm"
-            />
-            <button className="text-[#767676] hover:text-[#111111]">
-              <Smile size={14} className="md:size-[18px]" />
-            </button>
-            <button className="text-[#767676] hover:text-[#111111]">
-              <ImageIcon size={14} className="md:size-[18px]" />
-            </button>
-          </div>
-        </div>
-
-        {/* ✅ RIGHT PANEL: Completely HIDDEN on mobile (hidden), shows on sm and up (sm:block) */}
-        <div className="hidden sm:block flex-1 bg-white p-3 md:max-w-[50%] overflow-y-auto max-h-[50vh] md:max-h-full">
-          <div className="columns-2 gap-2 sm:columns-3">
-            {relatedPins.map((relatedPin) => (
-              <div
-                key={relatedPin.id}
-                className="mb-2 break-inside-avoid overflow-hidden rounded-xl bg-[#f0f0f0] cursor-pointer transition hover:shadow-md"
-                onClick={() => navigate(`/pin/${relatedPin.id}`)}
-              >
-                <img
-                  src={relatedPin.imageUrl}
-                  alt={relatedPin.title}
-                  className="w-full object-cover"
-                  style={{ aspectRatio: relatedPin.ratio }}
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 text-center text-xs font-semibold text-[#767676] md:mt-6 md:text-sm">
-            Ideas you might like
-          </div>
-        </div>
+        <aside className="columns-2 gap-3 lg:max-h-[calc(100vh-145px)] lg:overflow-y-auto">
+          {relatedPins.map((relatedPin) => <button key={relatedPin.id} onClick={() => navigate(`/pin/${relatedPin.id}`)} className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl bg-[#f0f0f0] text-left transition hover:opacity-90"><img src={relatedPin.imageUrl} alt={relatedPin.title} className="w-full object-cover" style={{ aspectRatio: relatedPin.ratio }} loading="lazy" /></button>)}
+        </aside>
       </div>
-    </div>
+    </main>
   );
 }

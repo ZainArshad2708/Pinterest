@@ -1,4 +1,5 @@
 import { LayoutGrid, Paperclip, Share2 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Corkboard() {
@@ -21,10 +22,20 @@ function Corkboard() {
   );
 }
 
-export default function ProfilePage({ pins }) {
+export default function ProfilePage({ pins, user }) {
   const navigate = useNavigate();
-  // Just use the pins passed down directly
   const unorganisedPins = pins.slice(0, 4);
+  const [shareStatus, setShareStatus] = useState("");
+  const displayName = user?.name || "Pinterest user";
+  const shareProfile = async () => {
+    const profileUrl = window.location.href;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      setShareStatus("Profile link copied");
+    } catch {
+      setShareStatus(profileUrl);
+    }
+  };
 
   return (
     <main className="mx-auto min-h-[calc(100vh-80px)] max-w-[1400px] px-6 pb-10 pt-8 lg:px-10">
@@ -43,22 +54,23 @@ export default function ProfilePage({ pins }) {
             >
               Boards
             </button>
-            <button className="pb-2 text-[#767676] hover:text-[#111111]">
+             <button onClick={() => setShareStatus("Collages will appear here when you create one")} className="pb-2 text-[#767676] hover:text-[#111111]">
               Collages
             </button>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <span className="grid h-12 w-12 place-items-center rounded-full bg-[#f6c94c] font-bold text-[#5a4600]">
-            Z
+            <span className="grid h-12 w-12 place-items-center rounded-full bg-[#f6c94c] font-bold text-[#5a4600]">
+             {displayName.charAt(0).toUpperCase()}
           </span>
           <span className="mr-2 leading-tight">
-            <strong className="block">zain arshad</strong>
+             <strong className="block">{displayName}</strong>
             <small className="text-[#767676]">0 following</small>
           </span>
-          <button className="flex items-center gap-2 rounded-full bg-[#e9e9e9] px-4 py-3 text-sm font-bold transition hover:bg-[#dcdcdc]">
-            <Share2 size={17} /> Share profile
-          </button>
+           <button onClick={shareProfile} className="flex items-center gap-2 rounded-full bg-[#e9e9e9] px-4 py-3 text-sm font-bold transition hover:bg-[#dcdcdc]">
+             <Share2 size={17} /> Share profile
+           </button>
+           {shareStatus && <span className="text-xs text-[#767676]">{shareStatus}</span>}
         </div>
       </div>
 
@@ -69,7 +81,7 @@ export default function ProfilePage({ pins }) {
           Pins are sparks for your next idea. Create boards to collect and
           organise the things you love.
         </p>
-        <button className="mt-5 rounded-full bg-[#E60023] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#ad001b]">
+         <button onClick={() => navigate("/boards")} className="mt-5 rounded-full bg-[#E60023] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#ad001b]">
           Create a board
         </button>
       </section>
@@ -82,7 +94,7 @@ export default function ProfilePage({ pins }) {
               Ideas you haven’t added to a board yet
             </p>
           </div>
-          <button className="flex items-center gap-2 rounded-full bg-[#e9e9e9] px-4 py-3 text-sm font-bold transition hover:bg-[#dcdcdc]">
+           <button onClick={() => navigate("/boards")} className="flex items-center gap-2 rounded-full bg-[#e9e9e9] px-4 py-3 text-sm font-bold transition hover:bg-[#dcdcdc]">
             <LayoutGrid size={17} /> Organise
           </button>
         </div>
@@ -90,7 +102,8 @@ export default function ProfilePage({ pins }) {
           {unorganisedPins.map((pin) => (
             <article
               key={pin.id}
-              className="overflow-hidden rounded-2xl bg-[#f0f0f0]"
+              onClick={() => navigate(`/pin/${pin.id}`)}
+              className="cursor-pointer overflow-hidden rounded-2xl bg-[#f0f0f0]"
             >
               <img
                 src={pin.imageUrl}

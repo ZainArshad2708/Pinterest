@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authApi, setToken } from "../lib/api";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Account created for:", name, email);
-    navigate("/login");
+    setError("");
+    try {
+      const { user, token } = await authApi.register({ name, email, password });
+      setToken(token);
+      localStorage.setItem("pinterest_user", JSON.stringify(user));
+      navigate("/", { replace: true });
+    } catch (requestError) {
+      setError(requestError.message);
+    }
   };
 
   return (
@@ -26,6 +35,7 @@ export default function Register() {
             Join Pinterest
           </h1>
         </div>
+        {error && <p className="mb-4 rounded-lg bg-red-100 p-3 text-center text-sm text-red-600">{error}</p>}
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
             <label className="block text-xs font-medium md:text-sm">Name</label>

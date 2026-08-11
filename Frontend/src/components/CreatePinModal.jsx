@@ -31,20 +31,18 @@ export default function CreatePinModal({
   const handleSave = () => {
     if (!previewUrl) return alert("Please upload an image first!");
 
+    const data = new FormData();
+    data.append("title", title || "Untitled pin");
+    data.append("description", description);
+    if (file) data.append("image", file);
+
     if (editingPin) {
       onUpdate({
         id: editingPin.id,
-        title: title || "Untitled pin",
-        description: description,
-        imageUrl: previewUrl,
-        ratio: editingPin.ratio || "4 / 5",
+        data,
       });
     } else {
-      onSave({
-        title: title || "Untitled pin",
-        description: description,
-        imageUrl: previewUrl,
-      });
+      onSave(data);
     }
   };
 
