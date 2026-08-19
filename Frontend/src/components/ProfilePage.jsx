@@ -23,8 +23,6 @@ function Corkboard() {
 
 export default function ProfilePage({ pins }) {
   const navigate = useNavigate();
-  // Just use the pins passed down directly
-  const unorganisedPins = pins.slice(0, 4);
 
   return (
     <main className="mx-auto min-h-[calc(100vh-80px)] max-w-[1400px] px-6 pb-10 pt-8 lg:px-10">
@@ -38,12 +36,15 @@ export default function ProfilePage({ pins }) {
               Pins
             </button>
             <button
-              onClick={() => navigate("/boards")}
+              onClick={() => alert("Boards page coming soon!")}
               className="pb-2 text-[#767676] transition hover:text-[#111111]"
             >
               Boards
             </button>
-            <button className="pb-2 text-[#767676] hover:text-[#111111]">
+            <button
+              onClick={() => alert("Collages feature coming soon!")}
+              className="pb-2 text-[#767676] transition hover:text-[#111111]"
+            >
               Collages
             </button>
           </div>
@@ -86,8 +87,9 @@ export default function ProfilePage({ pins }) {
             <LayoutGrid size={17} /> Organise
           </button>
         </div>
+        {/* ✅ All pins display karo */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {unorganisedPins.map((pin) => (
+          {pins.map((pin) => (
             <article
               key={pin.id}
               className="overflow-hidden rounded-2xl bg-[#f0f0f0]"
