@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 
 export default function Header({
@@ -8,8 +9,11 @@ export default function Header({
   setIsUserMenuOpen,
   searchQuery,
   setSearchQuery,
+  onOpenSettings,
 }) {
   const navigate = useNavigate();
+  const [isAccountsOpen, setIsAccountsOpen] = useState(false);
+  const [isBusinessActive, setIsBusinessActive] = useState(false);
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-2 bg-white px-3 md:h-20 md:gap-3 md:px-4 sm:px-6">
@@ -35,7 +39,6 @@ export default function Header({
           />
         </label>
 
-        {/* ✅ REMOVED THE EXTRA PADDING AND DIVIDER LINE CAUSING THE WHITE BAR */}
         {isSearchFocused && searchQuery === "" && (
           <div className="absolute left-0 right-0 top-[44px] rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 md:top-[56px]" />
         )}
@@ -46,7 +49,10 @@ export default function Header({
           <button
             aria-label="Open profile menu"
             aria-expanded={isUserMenuOpen}
-            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+            onClick={() => {
+              setIsUserMenuOpen(!isUserMenuOpen);
+              setIsAccountsOpen(false);
+            }}
             className="flex h-8 items-center gap-0.5 rounded-full px-1 transition hover:bg-[#e9e9e9] md:h-11 md:gap-1 md:px-1.5"
           >
             <span className="grid h-6 w-6 place-items-center rounded-full bg-[#f6c94c] text-[10px] font-bold text-[#5a4600] md:h-8 md:w-8 md:text-sm">
@@ -59,62 +65,121 @@ export default function Header({
           </button>
 
           {isUserMenuOpen && (
-            <div className="absolute right-0 top-[36px] w-56 rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-black/5 md:top-[52px] md:w-80 md:p-3">
+            <div className="absolute right-0 top-[36px] w-64 rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-black/5 md:top-[52px] md:w-80 md:p-3">
               <p className="px-2 pb-2 text-[10px] font-semibold text-[#767676] md:text-xs">
                 Currently in
               </p>
+
+              {/* Account Info Row */}
               <button
                 onClick={() => {
                   navigate("/profile");
                   setIsUserMenuOpen(false);
                 }}
-                className="flex w-full items-center gap-2 rounded-xl p-1.5 text-left transition hover:bg-[#f0f0f0] md:gap-3 md:p-2"
+                className="flex w-full items-center justify-between rounded-xl p-2 text-left transition hover:bg-[#f0f0f0]"
               >
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f6c94c] text-sm font-bold text-[#5a4600] md:h-12 md:w-12 md:text-lg">
-                  Z
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-xs font-semibold md:text-sm">
-                    zain arshad
+                <div className="flex items-center gap-3">
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-[#f6c94c] text-base font-bold text-[#5a4600] md:h-12 md:w-12 md:text-lg">
+                    Z
                   </span>
-                  <span className="block truncate text-[10px] text-[#767676] md:text-sm">
-                    zainii2003@gmail.com
-                  </span>
-                </span>
-                <ChevronDown
-                  size={14}
-                  className="text-[#767676] md:size-[16px]"
-                />
+                  <div>
+                    <p className="text-sm font-semibold">zain</p>
+                    <p className="text-xs text-[#767676]">zain123@gmail.com</p>
+                  </div>
+                </div>
+                <span className="text-[#767676] text-xs">›</span>
               </button>
+
               <div className="my-1.5 h-px bg-[#e9e9e9] md:my-2" />
 
-              <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
-                Convert to business
+              {/* ✅ Business Account Toggle (Text change only) */}
+              <button
+                onClick={() => setIsBusinessActive(!isBusinessActive)}
+                className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
+              >
+                {isBusinessActive
+                  ? "Business account active"
+                  : "Business account"}
               </button>
-              <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
-                Your accounts
-              </button>
-              <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
+
+              {/* Accordion Style Your Accounts */}
+              <div className="w-full my-1.5">
+                <button
+                  onClick={() => setIsAccountsOpen(!isAccountsOpen)}
+                  className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
+                >
+                  <span>Your accounts</span>
+                  <span
+                    className={`transition-transform duration-200 ${isAccountsOpen ? "rotate-90" : ""}`}
+                  >
+                    ›
+                  </span>
+                </button>
+
+                {isAccountsOpen && (
+                  <div className="mt-1 rounded-xl bg-[#f3f3f3] p-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="flex items-center justify-between rounded-lg bg-white p-2 shadow-sm my-1">
+                      <div className="flex items-center gap-2">
+                        <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f6c94c] text-xs font-bold text-[#5a4600]">
+                          Z
+                        </span>
+                        <div>
+                          <p className="text-xs font-bold">zain</p>
+                          <p className="text-[10px] text-[#767676]">
+                            zain123@gmail.com
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-[10px] font-semibold text-[#111111]">
+                        Active
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        navigate("/profile");
+                        setIsUserMenuOpen(false);
+                        setIsAccountsOpen(false);
+                      }}
+                      className="mt-1 w-full text-left px-2 py-1 text-xs font-bold text-[#111111] underline hover:text-[#767676]"
+                    >
+                      View profile
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => {
+                  navigate("/login");
+                  setIsUserMenuOpen(false);
+                }}
+                className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
+              >
                 Add Pinterest account
               </button>
 
-              <div className="my-1.5 h-px bg-[#e9e9e9] md:hidden" />
+              <div className="my-1.5 h-px bg-[#e9e9e9] md:my-2" />
+
+              {/* Settings - Only on mobile, hidden on desktop */}
               <button
                 onClick={() => {
                   setIsUserMenuOpen(false);
-                  // Note: This requires onOpenSettings to be passed in props from MainLayout
+                  setIsAccountsOpen(false);
+                  if (onOpenSettings) onOpenSettings();
+                  else alert("Settings page coming soon!");
                 }}
                 className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:hidden"
               >
                 Settings
               </button>
 
-              <div className="my-1.5 h-px bg-[#e9e9e9] md:my-2" />
               <button
                 onClick={() => {
                   localStorage.removeItem("pinterest_user");
                   navigate("/login");
                   setIsUserMenuOpen(false);
+                  setIsAccountsOpen(false);
                 }}
                 className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm"
               >
