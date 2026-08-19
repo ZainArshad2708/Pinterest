@@ -1,3 +1,5 @@
+//it means hum bakend ko yaha sy call kreingy
+const API_URL = "http://localhost:5000/api";
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
@@ -149,10 +151,14 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [pinToEdit, setPinToEdit] = useState(null);
 
-  const [pins, setPins] = useState(() => {
-    const savedPins = localStorage.getItem("pinterest_clone_pins");
-    return savedPins ? JSON.parse(savedPins) : defaultPins;
-  });
+  const [pins, setPins] = useState([]);
+  useEffect(() => {
+    //backend sy data fetch krna
+    fetch(`${API_URL}/pins`)
+      .then((res) => res.json())
+      .then((data) => setPins(data))
+      .catch((err) => console.error("Error Fetching pins:", err));
+  }, []);
   // ✅ ADD THIS BLOCK TO PROTECT THE APP
   useEffect(() => {
     const user = localStorage.getItem("pinterest_user");
@@ -174,10 +180,19 @@ export default function App() {
     pin.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const addPin = (newPinData) => {
-    const newPin = { id: Date.now(), ...newPinData, ratio: "4 / 5" };
-    setPins([newPin, ...pins]);
-    setIsCreateModalOpen(false);
+  const addPin = async (newPinData) => {
+    try {
+      const response = await fetch(`${API_URL}/pins`, {
+        method: "POST",
+        headers: { "content-Type": "application/json" },
+        body: JSON.stringify(newPinData),
+      });
+      const savedPin = await response.json();
+      setPins([savedPin, ...pins]);
+      setIsCreateModalOpen(false);
+    } catch (error) {
+      console.error("Error saving pin:", error);
+    }
   };
 
   const editPin = (updatedPin) => {
@@ -188,9 +203,15 @@ export default function App() {
     setPinToEdit(null);
   };
 
-  const deletePin = (pinId) => {
-    const updatedPins = pins.filter((pin) => pin.id !== pinId);
-    setPins(updatedPins);
+  const deletePin = async (pinId) => {
+    try {
+      await fetch(`${API_URL}/pins/${pinId}`, {
+        method: "DELETE",
+      });
+      setPins(pins.filter((pin) => pin.id !== pinId)); //pin feed sy delete kro
+    } catch (error) {
+      console.error("Error deleting pin", error);
+    }
   };
 
   return (
