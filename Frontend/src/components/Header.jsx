@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
-import { authApi, clearSession } from "../lib/api";
 
 export default function Header({
   isSearchFocused,
@@ -10,21 +8,8 @@ export default function Header({
   setIsUserMenuOpen,
   searchQuery,
   setSearchQuery,
-  onOpenSettings,
-  user,
-  onUserUpdated,
 }) {
   const navigate = useNavigate();
-  const [isAccountsOpen, setIsAccountsOpen] = useState(false);
-  const displayName = user?.name || "Pinterest user";
-  const email = user?.email || "";
-  const initial = displayName.charAt(0).toUpperCase();
-
-  const convertToBusiness = async () => {
-    const { user: updatedUser } = await authApi.updateProfile({ accountType: "business" });
-    onUserUpdated(updatedUser);
-    setIsUserMenuOpen(false);
-  };
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-2 bg-white px-3 md:h-20 md:gap-3 md:px-4 sm:px-6">
@@ -65,7 +50,7 @@ export default function Header({
             className="flex h-8 items-center gap-0.5 rounded-full px-1 transition hover:bg-[#e9e9e9] md:h-11 md:gap-1 md:px-1.5"
           >
             <span className="grid h-6 w-6 place-items-center rounded-full bg-[#f6c94c] text-[10px] font-bold text-[#5a4600] md:h-8 md:w-8 md:text-sm">
-               {initial}
+              Z
             </span>
             <ChevronDown
               size={12}
@@ -86,14 +71,14 @@ export default function Header({
                 className="flex w-full items-center gap-2 rounded-xl p-1.5 text-left transition hover:bg-[#f0f0f0] md:gap-3 md:p-2"
               >
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-[#f6c94c] text-sm font-bold text-[#5a4600] md:h-12 md:w-12 md:text-lg">
-                   {initial}
+                  Z
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-xs font-semibold md:text-sm">
-                    {displayName}
+                    zain arshad
                   </span>
                   <span className="block truncate text-[10px] text-[#767676] md:text-sm">
-                    {email}
+                    zainii2003@gmail.com
                   </span>
                 </span>
                 <ChevronDown
@@ -103,29 +88,21 @@ export default function Header({
               </button>
               <div className="my-1.5 h-px bg-[#e9e9e9] md:my-2" />
 
-               <button onClick={convertToBusiness} className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
-                 {user?.accountType === "business" ? "Business account active" : "Convert to business"}
-               </button>
-               <button onClick={() => setIsAccountsOpen(true)} className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
-                 Your accounts
-               </button>
-               <button onClick={() => navigate("/register")} className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
-                 Add Pinterest account
-               </button>
-
-               {isAccountsOpen && (
-                 <div className="my-2 rounded-xl bg-[#f7f7f7] p-3 text-xs">
-                   <p className="font-bold">Active account</p>
-                   <p className="mt-1 truncate text-[#767676]">{email}</p>
-                   <button onClick={() => { setIsAccountsOpen(false); navigate("/profile"); }} className="mt-2 font-semibold underline">View profile</button>
-                 </div>
-               )}
+              <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
+                Convert to business
+              </button>
+              <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
+                Your accounts
+              </button>
+              <button className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-2 md:text-sm">
+                Add Pinterest account
+              </button>
 
               <div className="my-1.5 h-px bg-[#e9e9e9] md:hidden" />
               <button
                 onClick={() => {
                   setIsUserMenuOpen(false);
-                  onOpenSettings();
+                  // Note: This requires onOpenSettings to be passed in props from MainLayout
                 }}
                 className="block w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold transition hover:bg-[#f0f0f0] md:hidden"
               >
@@ -135,7 +112,7 @@ export default function Header({
               <div className="my-1.5 h-px bg-[#e9e9e9] md:my-2" />
               <button
                 onClick={() => {
-                  clearSession();
+                  localStorage.removeItem("pinterest_user");
                   navigate("/login");
                   setIsUserMenuOpen(false);
                 }}

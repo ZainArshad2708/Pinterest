@@ -52,8 +52,6 @@ export default function Sidebar({
                   onCreate();
                 } else if (page === "Home") {
                   navigate("/");
-                } else if (page === "Explore") {
-                  navigate("/explore");
                 } else if (page === "Profile") {
                   navigate("/profile");
                 } else if (page === "Notifications") {

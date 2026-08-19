@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
-import { boardsApi } from "../lib/api";
 
 export default function BoardsPage() {
   const [boardName, setBoardName] = useState("");
-  const [boards, setBoards] = useState([]);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    boardsApi.list().then(({ boards: loadedBoards }) => setBoards(loadedBoards)).catch((requestError) => setError(requestError.message));
-  }, []);
+  const [boards, setBoards] = useState([
+    { id: 1, name: "Summer Vibes", pinCount: 3 },
+    { id: 2, name: "Dream Interiors", pinCount: 5 },
+  ]);
 
   const handleCreateBoard = () => {
     if (!boardName.trim()) return;
-    boardsApi.create(boardName).then(({ board }) => {
-      setBoards((currentBoards) => [board, ...currentBoards]);
-      setBoardName("");
-    }).catch((requestError) => setError(requestError.message));
+    const newBoard = {
+      id: Date.now(),
+      name: boardName,
+      pinCount: 0,
+    };
+    setBoards([newBoard, ...boards]);
+    setBoardName("");
   };
 
   return (
@@ -30,7 +30,6 @@ export default function BoardsPage() {
             Organise your ideas into collections.
           </p>
         </div>
-        {error && <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
         {/* Create Board Button + Input */}
         <div className="flex flex-wrap items-center gap-3">
@@ -54,7 +53,7 @@ export default function BoardsPage() {
       </div>
 
       {/* Boards Grid */}
-        <section className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <section className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {boards.map((board) => (
           <div
             key={board.id}
@@ -68,8 +67,7 @@ export default function BoardsPage() {
             </div>
           </div>
         ))}
-        </section>
-        {boards.length === 0 && !error && <p className="mt-12 text-center text-sm text-[#767676]">No boards yet. Create your first board above.</p>}
+      </section>
     </main>
   );
 }

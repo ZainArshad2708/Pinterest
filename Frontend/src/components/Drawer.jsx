@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BellRing, MessageCircleMore, Plus, Send, X } from "lucide-react";
 
 function GlassesIllustration() {
@@ -32,10 +31,6 @@ function MessageIllustration() {
 
 export default function Drawer({ type, onClose }) {
   const isNotifications = type === "Notifications";
-  const [message, setMessage] = useState("");
-  const invite = async () => {
-    try { await navigator.clipboard.writeText(window.location.origin); setMessage("Invite link copied"); } catch { setMessage(window.location.origin); }
-  };
 
   return (
     <aside className="fixed left-0 top-0 z-30 flex h-screen w-[300px] max-w-[85vw] flex-col bg-white px-4 py-4 shadow-2xl transition-transform duration-300 ease-out md:left-20 md:w-[360px] md:px-6 md:py-6">
@@ -62,20 +57,19 @@ export default function Drawer({ type, onClose }) {
       ) : (
         <>
           <div className="mt-5 space-y-2 md:mt-7">
-             <button onClick={() => setMessage("New message composer is ready") } className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-3">
+            <button className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-3">
               <span className="grid h-8 w-8 place-items-center rounded-full bg-[#E60023] text-white">
                 <Plus size={18} />
               </span>
               New message
             </button>
-             <button onClick={invite} className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-3">
+            <button className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm font-semibold transition hover:bg-[#f0f0f0] md:px-3 md:py-3">
               <span className="grid h-8 w-8 place-items-center rounded-full bg-[#e9e9e9]">
                 <Send size={16} />
               </span>
               Invite your friends
             </button>
-           </div>
-           {message && <p className="rounded-lg bg-green-50 p-3 text-xs text-green-700">{message}</p>}
+          </div>
           <div className="flex flex-1 flex-col items-center justify-center pb-12 text-center md:pb-20">
             <MessageIllustration />
             <MessageCircleMore className="mt-2 text-[#E60023]" size={22} />

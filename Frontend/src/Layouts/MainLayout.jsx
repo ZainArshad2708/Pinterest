@@ -11,8 +11,6 @@ export default function MainLayout({
   onCreate,
   searchQuery,
   setSearchQuery,
-  user,
-  onUserUpdated,
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,7 +22,6 @@ export default function MainLayout({
 
   let activeTab = "Home";
   if (location.pathname === "/profile") activeTab = "Profile";
-  if (location.pathname === "/explore") activeTab = "Explore";
 
   const closeDrawer = () => setDrawerType(null);
   const closeSettings = () => setIsSettingsOpen(false);
@@ -52,9 +49,7 @@ export default function MainLayout({
           setIsUserMenuOpen={setIsUserMenuOpen}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-           onOpenSettings={() => setIsSettingsOpen(true)}
-           user={user}
-           onUserUpdated={onUserUpdated}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
         <Outlet context={{ pins }} />
       </div>
@@ -71,7 +66,7 @@ export default function MainLayout({
           />
           <span className="text-[9px] font-medium">Home</span>
         </button>
-        <button onClick={() => navigate("/explore")} className={`flex flex-col items-center gap-0.5 ${activeTab === "Explore" ? "text-[#111111]" : "text-[#767676]"}`}>
+        <button className="flex flex-col items-center gap-0.5 text-[#767676]">
           <Compass size={20} />
           <span className="text-[9px] font-medium">Explore</span>
         </button>
@@ -99,7 +94,7 @@ export default function MainLayout({
       </nav>
 
       {drawerType && <Drawer type={drawerType} onClose={closeDrawer} />}
-       {isSettingsOpen && <SettingsDrawer onClose={closeSettings} user={user} onUserUpdated={onUserUpdated} />}
+      {isSettingsOpen && <SettingsDrawer onClose={closeSettings} />}
     </div>
   );
 }
