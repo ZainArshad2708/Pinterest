@@ -126,4 +126,46 @@ module.exports = [
       "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=700&q=85",
     ratio: "4 / 5",
   },
+  {
+    id: 19,
+    title: "Slow morning coffee",
+    imageUrl:
+      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=700&q=85",
+    ratio: "4 / 5",
+  },
+  {
+    id: 20,
+    title: "Mountain escape",
+    imageUrl:
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=85",
+    ratio: "4 / 6",
+  },
+  {
+    id: 21,
+    title: "Colourful market flowers",
+    imageUrl:
+      "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=700&q=85",
+    ratio: "4 / 5",
+  },
+  {
+    id: 22,
+    title: "Golden hour at home",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=700&q=85",
+    ratio: "4 / 3",
+  },
+  {
+    id: 23,
+    title: "Freshly baked bread",
+    imageUrl:
+      "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=700&q=85",
+    ratio: "4 / 4",
+  },
+  {
+    id: 24,
+    title: "A quiet forest trail",
+    imageUrl:
+      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=700&q=85",
+    ratio: "4 / 6",
+  },
 ];
