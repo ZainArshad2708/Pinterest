@@ -91,7 +91,7 @@ export default function ProfilePage({ pins }) {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {pins.map((pin) => (
             <article
-              key={pin.id}
+                key={pin._id}
               className="overflow-hidden rounded-2xl bg-[#f0f0f0]"
             >
               <img

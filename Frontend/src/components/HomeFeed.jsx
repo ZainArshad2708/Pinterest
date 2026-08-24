@@ -10,8 +10,8 @@ export default function HomeFeed({ pins }) {
       <section className="columns-2 gap-3 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6">
         {pins.map((pin) => (
           <div
-            key={pin.id}
-            onClick={() => navigate(`/pin/${pin.id}`)}
+            key={pin._id}
+            onClick={() => navigate(`/pin/${pin._id}`)}
             className="group relative mb-3 break-inside-avoid overflow-hidden rounded-2xl bg-[#f0f0f0] cursor-pointer"
           >
             <img

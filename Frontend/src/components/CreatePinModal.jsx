@@ -33,7 +33,7 @@ export default function CreatePinModal({
 
     if (editingPin) {
       onUpdate({
-        id: editingPin.id,
+        _id: editingPin._id,
         title: title || "Untitled pin",
         description: description,
         imageUrl: previewUrl,

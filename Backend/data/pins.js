@@ -1,5 +1,5 @@
-// 📦 Yeh hamara dummy data hai. Ab yeh alag file mein hai.
-const pins = [
+
+module.exports = [
   {
     id: 1,
     title: "A soft corner to unwind",
@@ -127,6 +127,3 @@ const pins = [
     ratio: "4 / 5",
   },
 ];
-
-//  Is file ko server.js mein use karne ke liye export karna zaroori hai
-module.exports = pins;

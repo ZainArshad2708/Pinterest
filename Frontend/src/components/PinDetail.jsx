@@ -16,7 +16,7 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const pin = pins.find((p) => p.id === parseInt(id));
+  const pin = pins.find((p) => p._id === id);
 
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -30,11 +30,11 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
     );
   }
 
-  const relatedPins = pins.filter((p) => p.id !== pin.id).slice(0, 8);
+  const relatedPins = pins.filter((p) => p._id !== pin._id).slice(0, 8);
 
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this pin?")) {
-      onDelete(pin.id);
+      onDelete(pin._id);
       navigate("/");
     }
   };
@@ -193,9 +193,9 @@ export default function PinDetail({ pins, onDelete, onEdit }) {
           <div className="columns-2 gap-2 sm:columns-3">
             {relatedPins.map((relatedPin) => (
               <div
-                key={relatedPin.id}
+                key={relatedPin._id}
                 className="mb-2 break-inside-avoid overflow-hidden rounded-xl bg-[#f0f0f0] cursor-pointer transition hover:shadow-md"
-                onClick={() => navigate(`/pin/${relatedPin.id}`)}
+                onClick={() => navigate(`/pin/${relatedPin._id}`)}
               >
                 <img
                   src={relatedPin.imageUrl}

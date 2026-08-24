@@ -17,8 +17,6 @@ import ProfilePage from "./components/ProfilePage";
 import CreatePinModal from "./components/CreatePinModal";
 import PinDetail from "./components/PinDetail";
 
-
-
 export default function App() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,7 +27,9 @@ export default function App() {
     //backend sy data fetch krna
     fetch(`${API_URL}/pins`)
       .then((res) => res.json())
-      .then((data) => setPins(data))
+      .then((data) => {
+        (console.log("backend pins is fetching"), setPins(data));
+      })
       .catch((err) => console.error("Error Fetching pins:", err));
   }, []);
   // ✅ ADD THIS BLOCK TO PROTECT THE APP
@@ -70,7 +70,7 @@ export default function App() {
 
   const editPin = (updatedPin) => {
     setPins((prevPins) =>
-      prevPins.map((pin) => (pin.id === updatedPin.id ? updatedPin : pin)),
+      prevPins.map((pin) => (pin._id === updatedPin._id ? updatedPin : pin)),
     );
     setIsCreateModalOpen(false);
     setPinToEdit(null);
@@ -81,7 +81,7 @@ export default function App() {
       await fetch(`${API_URL}/pins/${pinId}`, {
         method: "DELETE",
       });
-      setPins(pins.filter((pin) => pin.id !== pinId)); //pin feed sy delete kro
+       setPins(pins.filter((pin) => pin._id !== pinId)); //pin feed sy delete kro
     } catch (error) {
       console.error("Error deleting pin", error);
     }
