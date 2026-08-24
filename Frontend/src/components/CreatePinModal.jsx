@@ -28,22 +28,23 @@ export default function CreatePinModal({
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!previewUrl) return alert("Please upload an image first!");
+    if (!editingPin && !file) return alert("Please upload an image first!");
 
     if (editingPin) {
-      onUpdate({
+      await onUpdate({
         _id: editingPin._id,
         title: title || "Untitled pin",
         description: description,
-        imageUrl: previewUrl,
         ratio: editingPin.ratio || "4 / 5",
+        file,
       });
     } else {
-      onSave({
+      await onSave({
         title: title || "Untitled pin",
         description: description,
-        imageUrl: previewUrl,
+        file,
       });
     }
   };

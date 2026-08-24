@@ -55,25 +55,51 @@ export default function App() {
 
   const addPin = async (newPinData) => {
     try {
+      const formData = new FormData();
+      formData.append("title", newPinData.title);
+      formData.append("description", newPinData.description);
+      formData.append("ratio", newPinData.ratio || "4 / 5");
+      formData.append("image", newPinData.file);
+
       const response = await fetch(`${API_URL}/pins`, {
         method: "POST",
-        headers: { "content-Type": "application/json" },
-        body: JSON.stringify(newPinData),
+        body: formData,
       });
+
+      if (!response.ok) throw new Error("Unable to save pin");
+
       const savedPin = await response.json();
-      setPins([savedPin, ...pins]);
+      setPins((currentPins) => [savedPin, ...currentPins]);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error("Error saving pin:", error);
     }
   };
 
-  const editPin = (updatedPin) => {
-    setPins((prevPins) =>
-      prevPins.map((pin) => (pin._id === updatedPin._id ? updatedPin : pin)),
-    );
-    setIsCreateModalOpen(false);
-    setPinToEdit(null);
+  const editPin = async (updatedPin) => {
+    try {
+      const formData = new FormData();
+      formData.append("title", updatedPin.title);
+      formData.append("description", updatedPin.description);
+      formData.append("ratio", updatedPin.ratio || "4 / 5");
+      if (updatedPin.file) formData.append("image", updatedPin.file);
+
+      const response = await fetch(`${API_URL}/pins/${updatedPin._id}`, {
+        method: "PATCH",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Unable to update pin");
+
+      const savedPin = await response.json();
+      setPins((prevPins) =>
+        prevPins.map((pin) => (pin._id === savedPin._id ? savedPin : pin)),
+      );
+      setIsCreateModalOpen(false);
+      setPinToEdit(null);
+    } catch (error) {
+      console.error("Error updating pin:", error);
+    }
   };
 
   const deletePin = async (pinId) => {
