@@ -66,13 +66,17 @@ export default function App() {
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Unable to save pin");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Unable to save pin");
+      }
 
       const savedPin = await response.json();
       setPins((currentPins) => [savedPin, ...currentPins]);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error("Error saving pin:", error);
+      throw error;
     }
   };
 
@@ -89,7 +93,10 @@ export default function App() {
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Unable to update pin");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Unable to update pin");
+      }
 
       const savedPin = await response.json();
       setPins((prevPins) =>
@@ -99,6 +106,7 @@ export default function App() {
       setPinToEdit(null);
     } catch (error) {
       console.error("Error updating pin:", error);
+      throw error;
     }
   };
 

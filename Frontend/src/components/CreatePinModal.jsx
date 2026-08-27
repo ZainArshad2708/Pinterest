@@ -11,6 +11,8 @@ export default function CreatePinModal({
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (editingPin) {
@@ -25,27 +27,38 @@ export default function CreatePinModal({
     if (selectedFile) {
       setFile(selectedFile);
       setPreviewUrl(URL.createObjectURL(selectedFile));
+      setError("");
     }
   };
 
   const handleSave = async () => {
-    if (!previewUrl) return alert("Please upload an image first!");
-    if (!editingPin && !file) return alert("Please upload an image first!");
+    if (!previewUrl || (!editingPin && !file)) {
+      setError("Please choose an image first.");
+      return;
+    }
 
-    if (editingPin) {
-      await onUpdate({
-        _id: editingPin._id,
-        title: title || "Untitled pin",
-        description: description,
-        ratio: editingPin.ratio || "4 / 5",
-        file,
-      });
-    } else {
-      await onSave({
-        title: title || "Untitled pin",
-        description: description,
-        file,
-      });
+    setError("");
+    setIsSubmitting(true);
+    try {
+      if (editingPin) {
+        await onUpdate({
+          _id: editingPin._id,
+          title: title || "Untitled pin",
+          description: description,
+          ratio: editingPin.ratio || "4 / 5",
+          file,
+        });
+      } else {
+        await onSave({
+          title: title || "Untitled pin",
+          description: description,
+          file,
+        });
+      }
+    } catch (saveError) {
+      setError(saveError.message || "Unable to upload the image.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -103,6 +116,11 @@ export default function CreatePinModal({
         {/* ✅ Right Side: Stacks below on mobile */}
         <div className="flex flex-1 flex-col p-4 md:p-10">
           <div className="flex-1 space-y-4 md:space-y-6">
+            {error && (
+              <p role="alert" className="rounded-lg bg-red-100 p-3 text-sm text-red-700">
+                {error}
+              </p>
+            )}
             <div className="space-y-1">
               <input
                 type="text"
@@ -132,9 +150,10 @@ export default function CreatePinModal({
             </button>
             <button
               onClick={handleSave}
+              disabled={isSubmitting}
               className="rounded-full bg-[#E60023] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#ad001b] md:px-4 md:py-2.5 md:text-sm"
             >
-              {editingPin ? "Update" : "Publish"}
+              {isSubmitting ? "Uploading..." : editingPin ? "Update" : "Publish"}
             </button>
           </div>
         </div>

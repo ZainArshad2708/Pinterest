@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer"); // built-in used for uploading
 const path = require("path");
+const dummyPins = require("./data/pins");
 
 const app = express();
 app.use(cors());
@@ -24,15 +25,13 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, callback) => {
-    callback(null, file.mimetype.startsWith("image/"));
+    if (!file.mimetype.startsWith("image/")) {
+      return callback(new Error("Only image files are allowed."));
+    }
+
+    callback(null, true);
   },
 });
-
-//  MongoDB local server se connect karna
-mongoose
-  .connect("mongodb://localhost:27017/pinterest_clone")
-  .then(() => console.log("✅ MongoDB Connected Successfully!"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 //  Pin Schema (Database mein pin ka structure)
 const PinSchema = new mongoose.Schema({
@@ -113,8 +112,40 @@ app.delete("/api/pins/:id", async (req, res) => {
   }
 });
 
-//  Server Start
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Backend running on http://localhost:${PORT}`);
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError && error.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({ error: "Image must be 10 MB or smaller." });
+  }
+
+  if (error.message === "Only image files are allowed.") {
+    return res.status(400).json({ error: error.message });
+  }
+
+  next(error);
 });
+
+const PORT = process.env.PORT || 5000;
+
+async function startServer() {
+  try {
+    await mongoose.connect(
+      process.env.MONGODB_URI || "mongodb://localhost:27017/pinterest_clone",
+    );
+    console.log("MongoDB connected successfully.");
+
+    // Add the bundled sample pins once, without overwriting user-created pins.
+    if ((await Pin.countDocuments()) === 0) {
+      await Pin.insertMany(dummyPins);
+      console.log(`Seeded ${dummyPins.length} dummy pins.`);
+    }
+
+    app.listen(PORT, () => {
+      console.log(`Backend running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Unable to connect to MongoDB:", error);
+    process.exitCode = 1;
+  }
+}
+
+startServer();
